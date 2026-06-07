@@ -8,6 +8,7 @@ public partial class PlayerInputController : Node
 	private float _timeSinceLastSend;
 	private Vector3 _lastSentDirection;
 	private bool _jumpQueued;
+	private bool _restartChordActive;
 
 	public override void _Process(double delta)
 	{
@@ -41,6 +42,22 @@ public partial class PlayerInputController : Node
 		if (@event.IsActionPressed("jump"))
 		{
 			_jumpQueued = true;
+		}
+
+		if (!GameSessionController.IsConnected())
+		{
+			return;
+		}
+
+		var restartPressed = Input.IsKeyPressed(Key.I) && Input.IsKeyPressed(Key.O);
+		if (restartPressed && !_restartChordActive)
+		{
+			_restartChordActive = true;
+			GameSessionController.Conn.Reducers.ResetRun();
+		}
+		else if (!restartPressed)
+		{
+			_restartChordActive = false;
 		}
 	}
 

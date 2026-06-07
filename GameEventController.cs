@@ -73,6 +73,7 @@ public partial class GameEventController : CanvasLayer
 		_messageLabel.Modulate = gameEvent.EventType switch
 		{
 			"delivery_completed" => Colors.Gold,
+			"game_over" => Colors.OrangeRed,
 			"topping_dropped" => Colors.OrangeRed,
 			"topping_recovered" => Colors.LimeGreen,
 			_ => Colors.White,

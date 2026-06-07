@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dvu7i5chwwvhy"
+path="res://.godot/imported/whole-ham.obj-c4a06c11f8373e1c55fd70b6e2121da9.mesh"
+
+[deps]
+
+files=["res://.godot/imported/whole-ham.obj-c4a06c11f8373e1c55fd70b6e2121da9.mesh"]
+
+source_file="res://assets/food/OBJ format2/whole-ham.obj"
+dest_files=["res://.godot/imported/whole-ham.obj-c4a06c11f8373e1c55fd70b6e2121da9.mesh", "res://.godot/imported/whole-ham.obj-c4a06c11f8373e1c55fd70b6e2121da9.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

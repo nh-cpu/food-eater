@@ -21,6 +21,12 @@ namespace SpacetimeDB.Types
         public DbVector3 Velocity;
         [DataMember(Name = "tilt")]
         public float Tilt;
+        [DataMember(Name = "pitch")]
+        public float Pitch;
+        [DataMember(Name = "roll")]
+        public float Roll;
+        [DataMember(Name = "yaw")]
+        public float Yaw;
         [DataMember(Name = "attached_player_count")]
         public int AttachedPlayerCount;
         [DataMember(Name = "at_summit")]
@@ -35,6 +41,9 @@ namespace SpacetimeDB.Types
             DbVector3 Position,
             DbVector3 Velocity,
             float Tilt,
+            float Pitch,
+            float Roll,
+            float Yaw,
             int AttachedPlayerCount,
             bool AtSummit,
             bool Completed,
@@ -45,6 +54,9 @@ namespace SpacetimeDB.Types
             this.Position = Position;
             this.Velocity = Velocity;
             this.Tilt = Tilt;
+            this.Pitch = Pitch;
+            this.Roll = Roll;
+            this.Yaw = Yaw;
             this.AttachedPlayerCount = AttachedPlayerCount;
             this.AtSummit = AtSummit;
             this.Completed = Completed;

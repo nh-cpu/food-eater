@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://q1ka7wysm155"
+path="res://.godot/imported/cutting-board-round.obj-8a8525f76c6d20f7a7c7157c7eadbcbc.mesh"
+
+[deps]
+
+files=["res://.godot/imported/cutting-board-round.obj-8a8525f76c6d20f7a7c7157c7eadbcbc.mesh"]
+
+source_file="res://assets/food/OBJ format2/cutting-board-round.obj"
+dest_files=["res://.godot/imported/cutting-board-round.obj-8a8525f76c6d20f7a7c7157c7eadbcbc.mesh", "res://.godot/imported/cutting-board-round.obj-8a8525f76c6d20f7a7c7157c7eadbcbc.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

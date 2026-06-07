@@ -14,6 +14,8 @@
   <ItemGroup>
     <Compile Include="..\..\Shared\TerrainHeightData.cs" Link="Shared\TerrainHeightData.cs" />
     <Compile Include="..\..\Shared\TerrainHeightData.generated.cs" Link="Shared\TerrainHeightData.generated.cs" />
+    <Compile Include="..\..\Shared\ToppingShapeData.cs" Link="Shared\ToppingShapeData.cs" />
+    <Compile Include="..\..\Shared\ToppingShapeData.generated.cs" Link="Shared\ToppingShapeData.generated.cs" />
   </ItemGroup>
 
 </Project>

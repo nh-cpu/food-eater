@@ -14,9 +14,6 @@ public partial class GameSessionController : Node
 	[Export]
 	private string DatabaseName { get; set; } = "food-eater";
 
-	[Export]
-	private string DefaultPlayerName { get; set; } = "3Blave";
-
 	private static GameSessionController Instance { get; set; }
 	public static Identity LocalIdentity { get; private set; }
 	public static DbConnection Conn { get; private set; }
@@ -100,8 +97,6 @@ private void HandleSubscriptionApplied(SubscriptionEventContext ctx)
 	{
 		GD.Print("Subscription applied!");
 		OnSubscriptionApplied?.Invoke();
-
-		ctx.Reducers.EnterGame(DefaultPlayerName);
 	}
 
 	private static bool IsLocalServerUrl(string serverUrl)

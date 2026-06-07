@@ -10,7 +10,9 @@ public partial class SandwichController : Node3D
 
 	private readonly int _sandwichId;
 	private Vector3 _targetPosition;
-	private float _targetTiltRadians;
+	private float _targetPitchRadians;
+	private float _targetYawRadians;
+	private float _targetRollRadians;
 
 	public bool Completed { get; private set; }
 	public bool AtSummit { get; private set; }
@@ -28,14 +30,6 @@ public partial class SandwichController : Node3D
 	{
 		Name = $"Sandwich - {_sandwichId}";
 		AddToGroup(GroupName);
-
-		var mesh = new MeshInstance3D
-		{
-			Name = "PlaceholderMesh",
-			Mesh = new BoxMesh { Size = new Vector3(3f, 0.35f, 3f) },
-			MaterialOverride = new StandardMaterial3D { AlbedoColor = Colors.SaddleBrown },
-		};
-		AddChild(mesh);
 	}
 
 	public override void _Process(double delta)
@@ -45,9 +39,9 @@ public partial class SandwichController : Node3D
 
 		Position = Position.Lerp(_targetPosition, positionWeight);
 		Rotation = new Vector3(
-			Rotation.X,
-			Rotation.Y,
-			Mathf.LerpAngle(Rotation.Z, _targetTiltRadians, rotationWeight)
+			Mathf.LerpAngle(Rotation.X, _targetPitchRadians, rotationWeight),
+			Mathf.LerpAngle(Rotation.Y, _targetYawRadians, rotationWeight),
+			Mathf.LerpAngle(Rotation.Z, _targetRollRadians, rotationWeight)
 		);
 	}
 
@@ -60,7 +54,9 @@ public partial class SandwichController : Node3D
 		}
 
 		_targetPosition = sandwich.Position;
-		_targetTiltRadians = Mathf.DegToRad(sandwich.Tilt);
+		_targetPitchRadians = Mathf.DegToRad(sandwich.Pitch);
+		_targetYawRadians = Mathf.DegToRad(sandwich.Yaw);
+		_targetRollRadians = Mathf.DegToRad(sandwich.Roll);
 		Completed = sandwich.Completed;
 		AtSummit = sandwich.AtSummit;
 		AttachedPlayerCount = sandwich.AttachedPlayerCount;

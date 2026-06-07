@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cwdvm1br8hq4c"
+path="res://.godot/imported/wheel-dark.obj-de27cf8569ca49b3b1228ebf57c49e3b.mesh"
+
+[deps]
+
+files=["res://.godot/imported/wheel-dark.obj-de27cf8569ca49b3b1228ebf57c49e3b.mesh"]
+
+source_file="res://assets/cars/OBJ format/wheel-dark.obj"
+dest_files=["res://.godot/imported/wheel-dark.obj-de27cf8569ca49b3b1228ebf57c49e3b.mesh", "res://.godot/imported/wheel-dark.obj-de27cf8569ca49b3b1228ebf57c49e3b.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

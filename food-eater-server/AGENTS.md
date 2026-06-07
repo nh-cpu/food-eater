@@ -47,8 +47,8 @@ Organize data by access pattern, not by entity:
 Player          PlayerState         PlayerStats
 id         <--  player_id           player_id
 name            position_x          total_kills
-                position_y          total_deaths
-                velocity_x          play_time
+				position_y          total_deaths
+				velocity_x          play_time
 ```
 
 ## Reducers
@@ -283,7 +283,7 @@ using SpacetimeDB;
 
 public static partial class Module
 {
-    // Tables, types, and reducers here
+	// Tables, types, and reducers here
 }
 ```
 
@@ -295,12 +295,12 @@ public static partial class Module
 [SpacetimeDB.Table(Accessor = "Entity", Public = true)]
 public partial struct Entity
 {
-    [PrimaryKey]
-    [AutoInc]
-    public ulong Id;
-    public Identity Owner;
-    public string Name;
-    public bool Active;
+	[PrimaryKey]
+	[AutoInc]
+	public ulong Id;
+	public Identity Owner;
+	public string Name;
+	public bool Active;
 }
 ```
 
@@ -359,7 +359,7 @@ When you frequently look up rows by multiple columns, prefer a multi-column inde
 [SpacetimeDB.Reducer]
 public static void CreateEntity(ReducerContext ctx, string name, int age)
 {
-    ctx.Db.Entity.Insert(new Entity { Owner = ctx.Sender, Name = name, Age = age, Active = true });
+	ctx.Db.Entity.Insert(new Entity { Owner = ctx.Sender, Name = name, Age = age, Active = true });
 }
 
 // No arguments:
@@ -404,14 +404,14 @@ public static void OnDisconnect(ReducerContext ctx) { ... }
 [SpacetimeDB.View(Accessor = "ActiveUsers", Public = true)]
 public static List<Entity> ActiveUsers(AnonymousViewContext ctx)
 {
-    return ctx.Db.Entity.Iter().Where(e => e.Active).ToList();
+	return ctx.Db.Entity.Iter().Where(e => e.Active).ToList();
 }
 
 // Per-user view:
 [SpacetimeDB.View(Accessor = "MyProfile", Public = true)]
 public static Entity? MyProfile(ViewContext ctx)
 {
-    return ctx.Db.Entity.Identity.Find(ctx.Sender) as Entity?;
+	return ctx.Db.Entity.Identity.Find(ctx.Sender) as Entity?;
 }
 ```
 

@@ -10,6 +10,10 @@ public partial class TerrainExporter : EditorScript
 	private const string TerrainNodeName = "TerrainSource";
 	private const string OutputPath = "res://Shared/TerrainHeightData.generated.cs";
 	private const int OutputResolution = 65;
+	private const string IncludeGroupName = "terrain_export";
+	private const string ExcludeGroupName = "terrain_ignore";
+	private const string IncludeMetaName = "terrain_export";
+	private const string ExcludeMetaName = "terrain_ignore";
 
 	public override void _Run()
 	{
@@ -20,22 +24,23 @@ public partial class TerrainExporter : EditorScript
 			return;
 		}
 
-		var terrainNode = sceneRoot.FindChild(TerrainNodeName, true, false) as MeshInstance3D;
-		if (terrainNode == null)
+		var terrainRoot = sceneRoot.FindChild(TerrainNodeName, true, false) as Node3D;
+		if (terrainRoot == null)
 		{
-			GD.PushError($"Could not find a MeshInstance3D named '{TerrainNodeName}' in the edited scene.");
+			GD.PushError($"Could not find a Node3D named '{TerrainNodeName}' in the edited scene.");
 			return;
 		}
 
-		if (terrainNode.Mesh == null)
+		var terrainGeometry = TerrainGeometry.FromRoot(terrainRoot);
+		if (terrainGeometry.MeshCount == 0)
 		{
-			GD.PushError($"'{TerrainNodeName}' does not have a mesh.");
+			GD.PushError($"'{TerrainNodeName}' does not contain any MeshInstance3D nodes with meshes.");
 			return;
 		}
 
-		var sampleBounds = DetermineSampleBounds(terrainNode);
-		var heights = SampleTerrain(terrainNode, sampleBounds, OutputResolution);
-		var output = BuildGeneratedFile(sampleBounds, heights, OutputResolution);
+		var sampleBounds = terrainGeometry.Bounds;
+		var sampleData = SampleTerrain(terrainGeometry, sampleBounds, OutputResolution);
+		var output = BuildGeneratedFile(sampleBounds, sampleData, OutputResolution);
 
 		var absolutePath = ProjectSettings.GlobalizePath(OutputPath);
 		Directory.CreateDirectory(Path.GetDirectoryName(absolutePath)!);
@@ -43,19 +48,10 @@ public partial class TerrainExporter : EditorScript
 		GD.Print($"Terrain data exported to {OutputPath}");
 	}
 
-	private static Aabb DetermineSampleBounds(MeshInstance3D terrainNode)
+	private static TerrainSampleData SampleTerrain(TerrainGeometry terrainGeometry, Aabb bounds, int resolution)
 	{
-		var aabb = terrainNode.GlobalTransform * terrainNode.Mesh.GetAabb();
-		return new Aabb(
-			new Vector3(aabb.Position.X, aabb.Position.Y, aabb.Position.Z),
-			new Vector3(aabb.Size.X, aabb.Size.Y, aabb.Size.Z)
-		);
-	}
-
-	private static float[] SampleTerrain(MeshInstance3D terrainNode, Aabb bounds, int resolution)
-	{
-		var triangles = MeshTriangles.FromMesh(terrainNode);
 		var heights = new float[resolution * resolution];
+		var groundMask = new byte[resolution * resolution];
 		var stepX = bounds.Size.X / (resolution - 1);
 		var stepZ = bounds.Size.Z / (resolution - 1);
 
@@ -65,17 +61,19 @@ public partial class TerrainExporter : EditorScript
 			{
 				var worldX = bounds.Position.X + x * stepX;
 				var worldZ = bounds.Position.Z + z * stepZ;
-				heights[z * resolution + x] = triangles.SampleHeight(worldX, worldZ);
+				var index = z * resolution + x;
+				groundMask[index] = terrainGeometry.TrySampleHeightExact(worldX, worldZ, out _) ? (byte)1 : (byte)0;
+				heights[index] = terrainGeometry.SampleHeightOrNearest(worldX, worldZ, stepX, stepZ);
 			}
 		}
 
-		return heights;
+		return new TerrainSampleData(heights, groundMask);
 	}
 
-	private static string BuildGeneratedFile(Aabb bounds, float[] heights, int resolution)
+	private static string BuildGeneratedFile(Aabb bounds, TerrainSampleData sampleData, int resolution)
 	{
 		var maxHeight = float.MinValue;
-		foreach (var height in heights)
+		foreach (var height in sampleData.Heights)
 		{
 			if (height > maxHeight)
 			{
@@ -97,17 +95,36 @@ public partial class TerrainExporter : EditorScript
 		builder.AppendLine("    public static readonly float[] Heights =");
 		builder.AppendLine("    [");
 
-		for (var i = 0; i < heights.Length; i++)
+		for (var i = 0; i < sampleData.Heights.Length; i++)
 		{
 			builder.Append("        ");
-			builder.Append(Format(heights[i]));
+			builder.Append(Format(sampleData.Heights[i]));
 			builder.Append("f");
-			if (i < heights.Length - 1)
+			if (i < sampleData.Heights.Length - 1)
 			{
 				builder.Append(",");
 			}
 
-			if ((i + 1) % 8 == 0 || i == heights.Length - 1)
+			if ((i + 1) % 8 == 0 || i == sampleData.Heights.Length - 1)
+			{
+				builder.AppendLine();
+			}
+		}
+
+		builder.AppendLine("    ];");
+		builder.AppendLine("    public static readonly byte[] GroundMask =");
+		builder.AppendLine("    [");
+
+		for (var i = 0; i < sampleData.GroundMask.Length; i++)
+		{
+			builder.Append("        ");
+			builder.Append(sampleData.GroundMask[i].ToString(CultureInfo.InvariantCulture));
+			if (i < sampleData.GroundMask.Length - 1)
+			{
+				builder.Append(",");
+			}
+
+			if ((i + 1) % 16 == 0 || i == sampleData.GroundMask.Length - 1)
 			{
 				builder.AppendLine();
 			}
@@ -120,6 +137,8 @@ public partial class TerrainExporter : EditorScript
 
 	private static string Format(float value)
 		=> value.ToString("0.######", CultureInfo.InvariantCulture);
+
+	private readonly record struct TerrainSampleData(float[] Heights, byte[] GroundMask);
 
 	private readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C)
 	{
@@ -151,57 +170,297 @@ public partial class TerrainExporter : EditorScript
 			y = A.Y * w1 + B.Y * w2 + C.Y * w3;
 			return true;
 		}
-	}
 
-	private sealed class MeshTriangles
-	{
-		private readonly Triangle[] _triangles;
-
-		private MeshTriangles(Triangle[] triangles)
+		public bool TrySampleNearestHeight(float x, float z, out float y, out float distanceSquared)
 		{
-			_triangles = triangles;
+			if (TrySampleHeight(x, z, out y))
+			{
+				distanceSquared = 0f;
+				return true;
+			}
+
+			var point = new Vector2(x, z);
+			var found = false;
+			var bestDistanceSquared = float.MaxValue;
+			var bestHeight = 0f;
+
+			TrySampleNearestPointOnEdge(point, A, B, ref found, ref bestDistanceSquared, ref bestHeight);
+			TrySampleNearestPointOnEdge(point, B, C, ref found, ref bestDistanceSquared, ref bestHeight);
+			TrySampleNearestPointOnEdge(point, C, A, ref found, ref bestDistanceSquared, ref bestHeight);
+
+			y = bestHeight;
+			distanceSquared = bestDistanceSquared;
+			return found;
 		}
 
-		public static MeshTriangles FromMesh(MeshInstance3D terrainNode)
+		private static void TrySampleNearestPointOnEdge(
+			Vector2 point,
+			Vector3 start,
+			Vector3 end,
+			ref bool found,
+			ref float bestDistanceSquared,
+			ref float bestHeight
+		)
+		{
+			var start2 = new Vector2(start.X, start.Z);
+			var end2 = new Vector2(end.X, end.Z);
+			var edge = end2 - start2;
+			var edgeLengthSquared = edge.LengthSquared();
+
+			float t;
+			if (edgeLengthSquared < 0.000001f)
+			{
+				t = 0f;
+			}
+			else
+			{
+				t = Mathf.Clamp((point - start2).Dot(edge) / edgeLengthSquared, 0f, 1f);
+			}
+
+			var closestPoint = start2 + edge * t;
+			var distanceSquared = point.DistanceSquaredTo(closestPoint);
+			if (found && distanceSquared >= bestDistanceSquared)
+			{
+				return;
+			}
+
+			found = true;
+			bestDistanceSquared = distanceSquared;
+			bestHeight = Mathf.Lerp(start.Y, end.Y, t);
+		}
+	}
+
+	private sealed class TerrainGeometry
+	{
+		public Aabb Bounds { get; }
+		public int MeshCount { get; }
+		private readonly Triangle[] _triangles;
+
+		private TerrainGeometry(Triangle[] triangles, Aabb bounds, int meshCount)
+		{
+			_triangles = triangles;
+			Bounds = bounds;
+			MeshCount = meshCount;
+		}
+
+		public static TerrainGeometry FromRoot(Node3D terrainRoot)
 		{
 			var triangleList = new System.Collections.Generic.List<Triangle>();
-			var mesh = terrainNode.Mesh;
-			var transform = terrainNode.GlobalTransform;
+			var allMeshNodes = new System.Collections.Generic.List<MeshInstance3D>();
+			CollectMeshNodes(terrainRoot, allMeshNodes);
+			var useExplicitInclude = allMeshNodes.Exists(IsExplicitlyIncluded);
+			var meshNodes = allMeshNodes.FindAll(meshNode => ShouldUseMesh(meshNode, useExplicitInclude));
+			var meshCount = 0;
+			var hasBounds = false;
+			var min = Vector3.Zero;
+			var max = Vector3.Zero;
 
-			for (var surface = 0; surface < mesh.GetSurfaceCount(); surface++)
+			foreach (var meshNode in meshNodes)
 			{
-				var arrays = mesh.SurfaceGetArrays(surface);
-				var vertices = (Vector3[])arrays[(int)Mesh.ArrayType.Vertex];
-				var indices = (int[])arrays[(int)Mesh.ArrayType.Index];
-
-				if (indices.Length > 0)
+				var mesh = meshNode.Mesh;
+				if (mesh == null)
 				{
-					for (var i = 0; i < indices.Length; i += 3)
-					{
-						triangleList.Add(new Triangle(
-							transform * vertices[indices[i]],
-							transform * vertices[indices[i + 1]],
-							transform * vertices[indices[i + 2]]
-						));
-					}
+					continue;
+				}
+
+				meshCount++;
+				var transform = meshNode.GlobalTransform;
+				var worldAabb = transform * mesh.GetAabb();
+				var worldMin = worldAabb.Position;
+				var worldMax = worldAabb.End;
+
+				if (!hasBounds)
+				{
+					min = worldMin;
+					max = worldMax;
+					hasBounds = true;
 				}
 				else
 				{
-					for (var i = 0; i < vertices.Length; i += 3)
+					min = new Vector3(
+						MathF.Min(min.X, worldMin.X),
+						MathF.Min(min.Y, worldMin.Y),
+						MathF.Min(min.Z, worldMin.Z)
+					);
+					max = new Vector3(
+						MathF.Max(max.X, worldMax.X),
+						MathF.Max(max.Y, worldMax.Y),
+						MathF.Max(max.Z, worldMax.Z)
+					);
+				}
+
+				for (var surface = 0; surface < mesh.GetSurfaceCount(); surface++)
+				{
+					var arrays = mesh.SurfaceGetArrays(surface);
+					var vertices = (Vector3[])arrays[(int)Mesh.ArrayType.Vertex];
+					var indices = (int[])arrays[(int)Mesh.ArrayType.Index];
+
+					if (indices.Length > 0)
 					{
-						triangleList.Add(new Triangle(
-							transform * vertices[i],
-							transform * vertices[i + 1],
-							transform * vertices[i + 2]
-						));
+						for (var i = 0; i < indices.Length; i += 3)
+						{
+							triangleList.Add(new Triangle(
+								transform * vertices[indices[i]],
+								transform * vertices[indices[i + 1]],
+								transform * vertices[indices[i + 2]]
+							));
+						}
+					}
+					else
+					{
+						for (var i = 0; i < vertices.Length; i += 3)
+						{
+							triangleList.Add(new Triangle(
+								transform * vertices[i],
+								transform * vertices[i + 1],
+								transform * vertices[i + 2]
+							));
+						}
 					}
 				}
 			}
 
-			return new MeshTriangles(triangleList.ToArray());
+			var bounds = hasBounds
+				? new Aabb(min, max - min)
+				: new Aabb(Vector3.Zero, Vector3.Zero);
+			return new TerrainGeometry(triangleList.ToArray(), bounds, meshCount);
+		}
+
+		private static void CollectMeshNodes(Node node, System.Collections.Generic.List<MeshInstance3D> meshNodes)
+		{
+			if (node is MeshInstance3D meshNode)
+			{
+				meshNodes.Add(meshNode);
+			}
+
+			foreach (var child in node.GetChildren())
+			{
+				if (child is Node childNode)
+				{
+					CollectMeshNodes(childNode, meshNodes);
+				}
+			}
+		}
+
+		private static bool ShouldUseMesh(MeshInstance3D meshNode, bool useExplicitInclude)
+		{
+			if (HasTaggedAncestor(meshNode, ExcludeGroupName, ExcludeMetaName))
+			{
+				return false;
+			}
+
+			if (!useExplicitInclude)
+			{
+				return true;
+			}
+
+			return HasTaggedAncestor(meshNode, IncludeGroupName, IncludeMetaName);
+		}
+
+		private static bool IsExplicitlyIncluded(MeshInstance3D meshNode)
+			=> HasTaggedAncestor(meshNode, IncludeGroupName, IncludeMetaName);
+
+		private static bool HasTaggedAncestor(Node node, string groupName, string metaName)
+		{
+			for (Node current = node; current != null; current = current.GetParent())
+			{
+				if (current.IsInGroup(groupName))
+				{
+					return true;
+				}
+
+				if (current.HasMeta(metaName))
+				{
+					var value = current.GetMeta(metaName);
+					if (value.VariantType == Variant.Type.Bool && value.AsBool())
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		public float SampleHeight(float x, float z)
+		{
+			if (!TrySampleHeight(x, z, out var height))
+			{
+				throw new InvalidOperationException($"No terrain height found at ({x}, {z}).");
+			}
+
+			return height;
+		}
+
+		public bool TrySampleHeightExact(float x, float z, out float height)
+			=> TrySampleHeight(x, z, out height);
+
+		public float SampleHeightOrNearest(float x, float z, float stepX, float stepZ)
+		{
+			if (TrySampleHeight(x, z, out var exactHeight))
+			{
+				return exactHeight;
+			}
+
+			var searchStepX = MathF.Max(stepX * 0.5f, 0.001f);
+			var searchStepZ = MathF.Max(stepZ * 0.5f, 0.001f);
+			for (var radius = 1; radius <= 8; radius++)
+			{
+				for (var offsetX = -radius; offsetX <= radius; offsetX++)
+				{
+					for (var offsetZ = -radius; offsetZ <= radius; offsetZ++)
+					{
+						if (Math.Abs(offsetX) != radius && Math.Abs(offsetZ) != radius)
+						{
+							continue;
+						}
+
+						var sampleX = x + offsetX * searchStepX;
+						var sampleZ = z + offsetZ * searchStepZ;
+						if (TrySampleHeight(sampleX, sampleZ, out var nearbyHeight))
+						{
+							return nearbyHeight;
+						}
+					}
+				}
+			}
+
+			if (TrySampleNearestHeight(x, z, out var nearestHeight))
+			{
+				return nearestHeight;
+			}
+
+			throw new InvalidOperationException($"No terrain height found near ({x}, {z}).");
+		}
+
+		private bool TrySampleNearestHeight(float x, float z, out float height)
+		{
+			var found = false;
+			var bestDistanceSquared = float.MaxValue;
+			var bestHeight = 0f;
+
+			foreach (var triangle in _triangles)
+			{
+				if (!triangle.TrySampleNearestHeight(x, z, out var triangleHeight, out var distanceSquared))
+				{
+					continue;
+				}
+
+				if (found && distanceSquared >= bestDistanceSquared)
+				{
+					continue;
+				}
+
+				found = true;
+				bestDistanceSquared = distanceSquared;
+				bestHeight = triangleHeight;
+			}
+
+			height = bestHeight;
+			return found;
+		}
+
+		private bool TrySampleHeight(float x, float z, out float height)
 		{
 			var found = false;
 			var bestHeight = float.MinValue;
@@ -222,10 +481,12 @@ public partial class TerrainExporter : EditorScript
 
 			if (!found)
 			{
-				throw new InvalidOperationException($"No terrain height found at ({x}, {z}).");
+				height = 0f;
+				return false;
 			}
 
-			return bestHeight;
+			height = bestHeight;
+			return true;
 		}
 	}
 }

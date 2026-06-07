@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bbgqqypav5sat"
+path="res://.godot/imported/skewer-vegetables.obj-7470038122f9609b5c9bd329b641dfad.mesh"
+
+[deps]
+
+files=["res://.godot/imported/skewer-vegetables.obj-7470038122f9609b5c9bd329b641dfad.mesh"]
+
+source_file="res://assets/food/OBJ format2/skewer-vegetables.obj"
+dest_files=["res://.godot/imported/skewer-vegetables.obj-7470038122f9609b5c9bd329b641dfad.mesh", "res://.godot/imported/skewer-vegetables.obj-7470038122f9609b5c9bd329b641dfad.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

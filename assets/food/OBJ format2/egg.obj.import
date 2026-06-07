@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dvjqaji60pfip"
+path="res://.godot/imported/egg.obj-8594abaf8722d6d4e9e9200e0096b89d.mesh"
+
+[deps]
+
+files=["res://.godot/imported/egg.obj-8594abaf8722d6d4e9e9200e0096b89d.mesh"]
+
+source_file="res://assets/food/OBJ format2/egg.obj"
+dest_files=["res://.godot/imported/egg.obj-8594abaf8722d6d4e9e9200e0096b89d.mesh", "res://.godot/imported/egg.obj-8594abaf8722d6d4e9e9200e0096b89d.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
