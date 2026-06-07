@@ -27,11 +27,11 @@ namespace SpacetimeDB.Types
     {
         public RemoteTables(DbConnection conn)
         {
-            AddTable(Circle = new(conn));
             AddTable(Config = new(conn));
-            AddTable(Entity = new(conn));
-            AddTable(Food = new(conn));
+            AddTable(GameEvent = new(conn));
             AddTable(Player = new(conn));
+            AddTable(Sandwich = new(conn));
+            AddTable(Topping = new(conn));
         }
     }
 
@@ -528,22 +528,22 @@ namespace SpacetimeDB.Types
 
         internal static string[] AllTablesSqlQueries() => new string[]
         {
-            new QueryBuilder().From.Circle().ToSql(),
             new QueryBuilder().From.Config().ToSql(),
-            new QueryBuilder().From.Entity().ToSql(),
-            new QueryBuilder().From.Food().ToSql(),
+            new QueryBuilder().From.GameEvent().ToSql(),
             new QueryBuilder().From.Player().ToSql(),
+            new QueryBuilder().From.Sandwich().ToSql(),
+            new QueryBuilder().From.Topping().ToSql(),
         }
         ;
     }
 
     public sealed class From
     {
-        public global::SpacetimeDB.Table<Circle, CircleCols, CircleIxCols> Circle() => new("circle", new CircleCols("circle"), new CircleIxCols("circle"));
         public global::SpacetimeDB.Table<Config, ConfigCols, ConfigIxCols> Config() => new("config", new ConfigCols("config"), new ConfigIxCols("config"));
-        public global::SpacetimeDB.Table<Entity, EntityCols, EntityIxCols> Entity() => new("entity", new EntityCols("entity"), new EntityIxCols("entity"));
-        public global::SpacetimeDB.Table<Food, FoodCols, FoodIxCols> Food() => new("food", new FoodCols("food"), new FoodIxCols("food"));
+        public global::SpacetimeDB.Table<GameEvent, GameEventCols, GameEventIxCols> GameEvent() => new("game_event", new GameEventCols("game_event"), new GameEventIxCols("game_event"));
         public global::SpacetimeDB.Table<Player, PlayerCols, PlayerIxCols> Player() => new("player", new PlayerCols("player"), new PlayerIxCols("player"));
+        public global::SpacetimeDB.Table<Sandwich, SandwichCols, SandwichIxCols> Sandwich() => new("sandwich", new SandwichCols("sandwich"), new SandwichIxCols("sandwich"));
+        public global::SpacetimeDB.Table<Topping, ToppingCols, ToppingIxCols> Topping() => new("topping", new ToppingCols("topping"), new ToppingIxCols("topping"));
     }
 
     public sealed class TypedSubscriptionBuilder
@@ -626,6 +626,8 @@ namespace SpacetimeDB.Types
             return reducer switch
             {
                 Reducer.EnterGame args => Reducers.InvokeEnterGame(eventContext, args),
+                Reducer.ResetRun args => Reducers.InvokeResetRun(eventContext, args),
+                Reducer.TryRecoverTopping args => Reducers.InvokeTryRecoverTopping(eventContext, args),
                 Reducer.UpdatePlayerInput args => Reducers.InvokeUpdatePlayerInput(eventContext, args),
                 _ => throw new ArgumentOutOfRangeException("Reducer", $"Unknown reducer {reducer}")
             };

@@ -52,12 +52,18 @@ namespace SpacetimeDB.Types
         public global::SpacetimeDB.Col<Player, SpacetimeDB.Identity> Identity { get; }
         public global::SpacetimeDB.Col<Player, int> PlayerId { get; }
         public global::SpacetimeDB.Col<Player, string> Name { get; }
+        public global::SpacetimeDB.Col<Player, DbVector3> Position { get; }
+        public global::SpacetimeDB.Col<Player, DbVector3> AttachmentOffset { get; }
+        public global::SpacetimeDB.Col<Player, DbVector3> InputDirection { get; }
 
         public PlayerCols(string tableName)
         {
             Identity = new global::SpacetimeDB.Col<Player, SpacetimeDB.Identity>(tableName, "identity");
             PlayerId = new global::SpacetimeDB.Col<Player, int>(tableName, "player_id");
             Name = new global::SpacetimeDB.Col<Player, string>(tableName, "name");
+            Position = new global::SpacetimeDB.Col<Player, DbVector3>(tableName, "position");
+            AttachmentOffset = new global::SpacetimeDB.Col<Player, DbVector3>(tableName, "attachment_offset");
+            InputDirection = new global::SpacetimeDB.Col<Player, DbVector3>(tableName, "input_direction");
         }
     }
 

@@ -40,12 +40,26 @@ namespace SpacetimeDB.Types
     public sealed class ConfigCols
     {
         public global::SpacetimeDB.Col<Config, int> Id { get; }
-        public global::SpacetimeDB.Col<Config, long> WorldSize { get; }
+        public global::SpacetimeDB.Col<Config, float> WorldRadius { get; }
+        public global::SpacetimeDB.Col<Config, float> SummitHeight { get; }
+        public global::SpacetimeDB.Col<Config, float> SandwichSpeed { get; }
+        public global::SpacetimeDB.Col<Config, float> Gravity { get; }
+        public global::SpacetimeDB.Col<Config, float> RecoveryDistance { get; }
+        public global::SpacetimeDB.Col<Config, float> SummitDistance { get; }
+        public global::SpacetimeDB.Col<Config, float> ToppingDropTilt { get; }
+        public global::SpacetimeDB.Col<Config, float> ToppingDropImpactSpeed { get; }
 
         public ConfigCols(string tableName)
         {
             Id = new global::SpacetimeDB.Col<Config, int>(tableName, "id");
-            WorldSize = new global::SpacetimeDB.Col<Config, long>(tableName, "world_size");
+            WorldRadius = new global::SpacetimeDB.Col<Config, float>(tableName, "world_radius");
+            SummitHeight = new global::SpacetimeDB.Col<Config, float>(tableName, "summit_height");
+            SandwichSpeed = new global::SpacetimeDB.Col<Config, float>(tableName, "sandwich_speed");
+            Gravity = new global::SpacetimeDB.Col<Config, float>(tableName, "gravity");
+            RecoveryDistance = new global::SpacetimeDB.Col<Config, float>(tableName, "recovery_distance");
+            SummitDistance = new global::SpacetimeDB.Col<Config, float>(tableName, "summit_distance");
+            ToppingDropTilt = new global::SpacetimeDB.Col<Config, float>(tableName, "topping_drop_tilt");
+            ToppingDropImpactSpeed = new global::SpacetimeDB.Col<Config, float>(tableName, "topping_drop_impact_speed");
         }
     }
 

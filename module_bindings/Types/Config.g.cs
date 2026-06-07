@@ -15,16 +15,44 @@ namespace SpacetimeDB.Types
     {
         [DataMember(Name = "id")]
         public int Id;
-        [DataMember(Name = "world_size")]
-        public long WorldSize;
+        [DataMember(Name = "world_radius")]
+        public float WorldRadius;
+        [DataMember(Name = "summit_height")]
+        public float SummitHeight;
+        [DataMember(Name = "sandwich_speed")]
+        public float SandwichSpeed;
+        [DataMember(Name = "gravity")]
+        public float Gravity;
+        [DataMember(Name = "recovery_distance")]
+        public float RecoveryDistance;
+        [DataMember(Name = "summit_distance")]
+        public float SummitDistance;
+        [DataMember(Name = "topping_drop_tilt")]
+        public float ToppingDropTilt;
+        [DataMember(Name = "topping_drop_impact_speed")]
+        public float ToppingDropImpactSpeed;
 
         public Config(
             int Id,
-            long WorldSize
+            float WorldRadius,
+            float SummitHeight,
+            float SandwichSpeed,
+            float Gravity,
+            float RecoveryDistance,
+            float SummitDistance,
+            float ToppingDropTilt,
+            float ToppingDropImpactSpeed
         )
         {
             this.Id = Id;
-            this.WorldSize = WorldSize;
+            this.WorldRadius = WorldRadius;
+            this.SummitHeight = SummitHeight;
+            this.SandwichSpeed = SandwichSpeed;
+            this.Gravity = Gravity;
+            this.RecoveryDistance = RecoveryDistance;
+            this.SummitDistance = SummitDistance;
+            this.ToppingDropTilt = ToppingDropTilt;
+            this.ToppingDropImpactSpeed = ToppingDropImpactSpeed;
         }
 
         public Config()

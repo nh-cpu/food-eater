@@ -12,17 +12,17 @@ namespace SpacetimeDB.Types
 {
     public sealed partial class RemoteReducers : RemoteBase
     {
-        public delegate void UpdatePlayerInputHandler(ReducerEventContext ctx, SpacetimeDB.Types.DbVector3 direction);
-        public event UpdatePlayerInputHandler? OnUpdatePlayerInput;
+        public delegate void ResetRunHandler(ReducerEventContext ctx);
+        public event ResetRunHandler? OnResetRun;
 
-        public void UpdatePlayerInput(SpacetimeDB.Types.DbVector3 direction)
+        public void ResetRun()
         {
-            conn.InternalCallReducer(new Reducer.UpdatePlayerInput(direction));
+            conn.InternalCallReducer(new Reducer.ResetRun());
         }
 
-        public bool InvokeUpdatePlayerInput(ReducerEventContext ctx, Reducer.UpdatePlayerInput args)
+        public bool InvokeResetRun(ReducerEventContext ctx, Reducer.ResetRun args)
         {
-            if (OnUpdatePlayerInput == null)
+            if (OnResetRun == null)
             {
                 if (InternalOnUnhandledReducerError != null)
                 {
@@ -34,9 +34,8 @@ namespace SpacetimeDB.Types
                 }
                 return false;
             }
-            OnUpdatePlayerInput(
-                ctx,
-                args.Direction
+            OnResetRun(
+                ctx
             );
             return true;
         }
@@ -46,22 +45,9 @@ namespace SpacetimeDB.Types
     {
         [SpacetimeDB.Type]
         [DataContract]
-        public sealed partial class UpdatePlayerInput : Reducer, IReducerArgs
+        public sealed partial class ResetRun : Reducer, IReducerArgs
         {
-            [DataMember(Name = "direction")]
-            public DbVector3 Direction;
-
-            public UpdatePlayerInput(DbVector3 Direction)
-            {
-                this.Direction = Direction;
-            }
-
-            public UpdatePlayerInput()
-            {
-                this.Direction = new();
-            }
-
-            string IReducerArgs.ReducerName => "update_player_input";
+            string IReducerArgs.ReducerName => "reset_run";
         }
     }
 }

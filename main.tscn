@@ -1,6 +1,22 @@
-[gd_scene format=3 uid="uid://c1d5830own0da"]
+[gd_scene load_steps=6 format=3 uid="uid://c1d5830own0da"]
 
-[ext_resource type="Script" uid="uid://i66cx6xtupnb" path="res://GameManager.cs" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://dh435gjehl24j" path="res://GameSessionController.cs" id="1_session"]
+[ext_resource type="Script" path="res://PlayerInputController.cs" id="2_input"]
+[ext_resource type="Script" path="res://PlayerCameraController.cs" id="3_camera"]
+[ext_resource type="Script" path="res://WorldController.cs" id="4_world"]
+[ext_resource type="Script" path="res://GameEventController.cs" id="5_events"]
 
-[node name="Main" type="Node2D" unique_id=546452228]
-script = ExtResource("1_ig7tw")
+[node name="Main" type="Node"]
+script = ExtResource("1_session")
+
+[node name="World" type="Node3D" parent="."]
+script = ExtResource("4_world")
+
+[node name="PlayerInput" type="Node" parent="."]
+script = ExtResource("2_input")
+
+[node name="PlayerCamera" type="Node3D" parent="."]
+script = ExtResource("3_camera")
+
+[node name="GameEvents" type="CanvasLayer" parent="."]
+script = ExtResource("5_events")

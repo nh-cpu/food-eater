@@ -12,17 +12,17 @@ namespace SpacetimeDB.Types
 {
     public sealed partial class RemoteReducers : RemoteBase
     {
-        public delegate void UpdatePlayerInputHandler(ReducerEventContext ctx, SpacetimeDB.Types.DbVector3 direction);
-        public event UpdatePlayerInputHandler? OnUpdatePlayerInput;
+        public delegate void TryRecoverToppingHandler(ReducerEventContext ctx, int toppingId);
+        public event TryRecoverToppingHandler? OnTryRecoverTopping;
 
-        public void UpdatePlayerInput(SpacetimeDB.Types.DbVector3 direction)
+        public void TryRecoverTopping(int toppingId)
         {
-            conn.InternalCallReducer(new Reducer.UpdatePlayerInput(direction));
+            conn.InternalCallReducer(new Reducer.TryRecoverTopping(toppingId));
         }
 
-        public bool InvokeUpdatePlayerInput(ReducerEventContext ctx, Reducer.UpdatePlayerInput args)
+        public bool InvokeTryRecoverTopping(ReducerEventContext ctx, Reducer.TryRecoverTopping args)
         {
-            if (OnUpdatePlayerInput == null)
+            if (OnTryRecoverTopping == null)
             {
                 if (InternalOnUnhandledReducerError != null)
                 {
@@ -34,9 +34,9 @@ namespace SpacetimeDB.Types
                 }
                 return false;
             }
-            OnUpdatePlayerInput(
+            OnTryRecoverTopping(
                 ctx,
-                args.Direction
+                args.ToppingId
             );
             return true;
         }
@@ -46,22 +46,21 @@ namespace SpacetimeDB.Types
     {
         [SpacetimeDB.Type]
         [DataContract]
-        public sealed partial class UpdatePlayerInput : Reducer, IReducerArgs
+        public sealed partial class TryRecoverTopping : Reducer, IReducerArgs
         {
-            [DataMember(Name = "direction")]
-            public DbVector3 Direction;
+            [DataMember(Name = "topping_id")]
+            public int ToppingId;
 
-            public UpdatePlayerInput(DbVector3 Direction)
+            public TryRecoverTopping(int ToppingId)
             {
-                this.Direction = Direction;
+                this.ToppingId = ToppingId;
             }
 
-            public UpdatePlayerInput()
+            public TryRecoverTopping()
             {
-                this.Direction = new();
             }
 
-            string IReducerArgs.ReducerName => "update_player_input";
+            string IReducerArgs.ReducerName => "try_recover_topping";
         }
     }
 }

@@ -2,9 +2,12 @@ using Godot;
 
 namespace SpacetimeDB.Types
 {
-	public partial class DbVector2
+	public sealed partial class DbVector3
 	{
-		public static implicit operator Vector2(DbVector2 vec) => new(vec.X, vec.Y);
-		public static implicit operator DbVector2(Vector2 vec) => new(vec.X, vec.Y);
+		public static implicit operator Vector3(DbVector3 value)
+			=> new(value.X, value.Y, value.Z);
+
+		public static implicit operator DbVector3(Vector3 value)
+			=> new(value.X, value.Y, value.Z);
 	}
 }

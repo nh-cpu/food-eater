@@ -19,21 +19,36 @@ namespace SpacetimeDB.Types
         public int PlayerId;
         [DataMember(Name = "name")]
         public string Name;
+        [DataMember(Name = "position")]
+        public DbVector3 Position;
+        [DataMember(Name = "attachment_offset")]
+        public DbVector3 AttachmentOffset;
+        [DataMember(Name = "input_direction")]
+        public DbVector3 InputDirection;
 
         public Player(
             SpacetimeDB.Identity Identity,
             int PlayerId,
-            string Name
+            string Name,
+            DbVector3 Position,
+            DbVector3 AttachmentOffset,
+            DbVector3 InputDirection
         )
         {
             this.Identity = Identity;
             this.PlayerId = PlayerId;
             this.Name = Name;
+            this.Position = Position;
+            this.AttachmentOffset = AttachmentOffset;
+            this.InputDirection = InputDirection;
         }
 
         public Player()
         {
             this.Name = "";
+            this.Position = new();
+            this.AttachmentOffset = new();
+            this.InputDirection = new();
         }
     }
 }
