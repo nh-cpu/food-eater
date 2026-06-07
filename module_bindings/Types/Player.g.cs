@@ -25,6 +25,8 @@ namespace SpacetimeDB.Types
         public DbVector3 AttachmentOffset;
         [DataMember(Name = "input_direction")]
         public DbVector3 InputDirection;
+        [DataMember(Name = "jump_queued")]
+        public bool JumpQueued;
 
         public Player(
             SpacetimeDB.Identity Identity,
@@ -32,7 +34,8 @@ namespace SpacetimeDB.Types
             string Name,
             DbVector3 Position,
             DbVector3 AttachmentOffset,
-            DbVector3 InputDirection
+            DbVector3 InputDirection,
+            bool JumpQueued
         )
         {
             this.Identity = Identity;
@@ -41,6 +44,7 @@ namespace SpacetimeDB.Types
             this.Position = Position;
             this.AttachmentOffset = AttachmentOffset;
             this.InputDirection = InputDirection;
+            this.JumpQueued = JumpQueued;
         }
 
         public Player()

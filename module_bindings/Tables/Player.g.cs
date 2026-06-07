@@ -55,6 +55,7 @@ namespace SpacetimeDB.Types
         public global::SpacetimeDB.Col<Player, DbVector3> Position { get; }
         public global::SpacetimeDB.Col<Player, DbVector3> AttachmentOffset { get; }
         public global::SpacetimeDB.Col<Player, DbVector3> InputDirection { get; }
+        public global::SpacetimeDB.Col<Player, bool> JumpQueued { get; }
 
         public PlayerCols(string tableName)
         {
@@ -64,6 +65,7 @@ namespace SpacetimeDB.Types
             Position = new global::SpacetimeDB.Col<Player, DbVector3>(tableName, "position");
             AttachmentOffset = new global::SpacetimeDB.Col<Player, DbVector3>(tableName, "attachment_offset");
             InputDirection = new global::SpacetimeDB.Col<Player, DbVector3>(tableName, "input_direction");
+            JumpQueued = new global::SpacetimeDB.Col<Player, bool>(tableName, "jump_queued");
         }
     }
 

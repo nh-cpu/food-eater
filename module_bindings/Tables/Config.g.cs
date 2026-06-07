@@ -48,6 +48,7 @@ namespace SpacetimeDB.Types
         public global::SpacetimeDB.Col<Config, float> SummitDistance { get; }
         public global::SpacetimeDB.Col<Config, float> ToppingDropTilt { get; }
         public global::SpacetimeDB.Col<Config, float> ToppingDropImpactSpeed { get; }
+        public global::SpacetimeDB.Col<Config, float> JumpImpulse { get; }
 
         public ConfigCols(string tableName)
         {
@@ -60,6 +61,7 @@ namespace SpacetimeDB.Types
             SummitDistance = new global::SpacetimeDB.Col<Config, float>(tableName, "summit_distance");
             ToppingDropTilt = new global::SpacetimeDB.Col<Config, float>(tableName, "topping_drop_tilt");
             ToppingDropImpactSpeed = new global::SpacetimeDB.Col<Config, float>(tableName, "topping_drop_impact_speed");
+            JumpImpulse = new global::SpacetimeDB.Col<Config, float>(tableName, "jump_impulse");
         }
     }
 

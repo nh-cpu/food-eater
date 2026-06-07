@@ -11,4 +11,9 @@
     <PackageReference Include="SpacetimeDB.Runtime" Version="2.4.*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\Shared\TerrainHeightData.cs" Link="Shared\TerrainHeightData.cs" />
+    <Compile Include="..\..\Shared\TerrainHeightData.generated.cs" Link="Shared\TerrainHeightData.generated.cs" />
+  </ItemGroup>
+
 </Project>

@@ -31,6 +31,8 @@ namespace SpacetimeDB.Types
         public float ToppingDropTilt;
         [DataMember(Name = "topping_drop_impact_speed")]
         public float ToppingDropImpactSpeed;
+        [DataMember(Name = "jump_impulse")]
+        public float JumpImpulse;
 
         public Config(
             int Id,
@@ -41,7 +43,8 @@ namespace SpacetimeDB.Types
             float RecoveryDistance,
             float SummitDistance,
             float ToppingDropTilt,
-            float ToppingDropImpactSpeed
+            float ToppingDropImpactSpeed,
+            float JumpImpulse
         )
         {
             this.Id = Id;
@@ -53,6 +56,7 @@ namespace SpacetimeDB.Types
             this.SummitDistance = SummitDistance;
             this.ToppingDropTilt = ToppingDropTilt;
             this.ToppingDropImpactSpeed = ToppingDropImpactSpeed;
+            this.JumpImpulse = JumpImpulse;
         }
 
         public Config()

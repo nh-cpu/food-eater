@@ -12,12 +12,12 @@ namespace SpacetimeDB.Types
 {
     public sealed partial class RemoteReducers : RemoteBase
     {
-        public delegate void UpdatePlayerInputHandler(ReducerEventContext ctx, SpacetimeDB.Types.DbVector3 direction);
+        public delegate void UpdatePlayerInputHandler(ReducerEventContext ctx, SpacetimeDB.Types.DbVector3 direction, bool jumpRequested);
         public event UpdatePlayerInputHandler? OnUpdatePlayerInput;
 
-        public void UpdatePlayerInput(SpacetimeDB.Types.DbVector3 direction)
+        public void UpdatePlayerInput(SpacetimeDB.Types.DbVector3 direction, bool jumpRequested)
         {
-            conn.InternalCallReducer(new Reducer.UpdatePlayerInput(direction));
+            conn.InternalCallReducer(new Reducer.UpdatePlayerInput(direction, jumpRequested));
         }
 
         public bool InvokeUpdatePlayerInput(ReducerEventContext ctx, Reducer.UpdatePlayerInput args)
@@ -36,7 +36,8 @@ namespace SpacetimeDB.Types
             }
             OnUpdatePlayerInput(
                 ctx,
-                args.Direction
+                args.Direction,
+                args.JumpRequested
             );
             return true;
         }
@@ -50,10 +51,16 @@ namespace SpacetimeDB.Types
         {
             [DataMember(Name = "direction")]
             public DbVector3 Direction;
+            [DataMember(Name = "jump_requested")]
+            public bool JumpRequested;
 
-            public UpdatePlayerInput(DbVector3 Direction)
+            public UpdatePlayerInput(
+                DbVector3 Direction,
+                bool JumpRequested
+            )
             {
                 this.Direction = Direction;
+                this.JumpRequested = JumpRequested;
             }
 
             public UpdatePlayerInput()
